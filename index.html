@@ -6,41 +6,7 @@
   <title>Vitrine da Gisele</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
-  <style>
-    :root{--accent:#43c0d9;--accent-dark:#2aa0b0;--bg:#f6f6f7;--card:#fff;--muted:#777}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#222;background:var(--bg)}
-    header{background:linear-gradient(180deg,#c84b9b 0%, #c84b9b 45%, transparent 45%);padding:24px 0}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:24px}
-
-    /* sidebar */
-    .sidebar{background:#fff;border-radius:6px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    .profile-top{background:var(--accent);color:#fff;padding:18px;text-align:center}
-    .profile-top img{width:160px;height:200px;object-fit:cover;border-radius:4px;border:6px solid rgba(255,255,255,.12)}
-    .name{margin-top:12px;font-weight:700}
-    .creci{font-size:13px;color:rgba(255,255,255,.9);margin-top:6px}
-    .contacts{padding:18px;border-top:1px solid #eee}
-    .contacts .phone{background:linear-gradient(180deg,var(--accent) 0%, var(--accent-dark)100%);color:#fff;padding:12px;border-radius:6px;text-align:center;font-weight:600}
-    .contacts p{margin:12px 0 0;color:var(--muted);font-size:14px}
-    .sidebar .actions{display:flex;flex-direction:column;padding:12px;gap:8px}
-    .btn{display:inline-flex;gap:8px;align-items:center;padding:10px;border-radius:6px;text-decoration:none;color:#fff;background:#333}
-    .btn.mail{background:#2d9cdb}
-
-    /* main */
-    main{min-height:420px}
-    .filters{background:#fff;padding:18px;border-radius:6px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .filter{flex:1;min-width:150px}
-    select,input[type=number]{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:6px}
-    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:18px}
-    .card{background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.06);display:flex;flex-direction:column}
-    .thumb{height:160px;background:linear-gradient(90deg,#b3e5fc,#c9b0ff);display:flex;align-items:end;padding:12px;color:#fff;font-weight:700;font-size:18px}
-    .card .body{padding:12px;flex:1;display:flex;flex-direction:column}
-    .card h4{margin:0 0 8px;font-size:16px}
-    .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
-    .card .foot{display:flex;justify-content:space-between;align-items:center;padding:12px;border-top:1px solid #f0f0f0}
-    .price{font-weight:800}
-
+ 
     /* responsive */
     @media(max-width:880px){.layout{grid-template-columns:1fr}.sidebar{order:2}.filters{flex-direction:column}}
   </style>
