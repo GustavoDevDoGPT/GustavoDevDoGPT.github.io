@@ -1,62 +1,82 @@
-:root {
-  --primary: #0077FF;
-  --secondary: #E6F2FF;
-  --text-dark: #222222;
-  --text-light: #FFFFFF;
-  --gray-light: #F5F5F5;
-}
-
-* {
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f8fa;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background-color: var(--gray-light);
-  color: var(--text-dark);
-  font-family: 'Segoe UI', Arial, sans-serif;
-  line-height: 1.6;
+  color: #333;
 }
 
 header {
-  background-color: var(--primary);
-  color: var(--text-light);
-  padding: 20px;
+  background: #cc2b7c;
+  color: white;
   text-align: center;
-  border-bottom: 4px solid var(--secondary);
+  padding: 20px 0;
 }
 
-section {
-  background: var(--secondary);
-  margin: 20px auto;
+h1 {
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
   padding: 20px;
-  border-radius: 12px;
-  width: 80%;
-  max-width: 1000px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-button {
-  background-color: var(--primary);
-  color: var(--text-light);
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card button {
+  background: #000;
+  color: white;
   border: none;
-  padding: 12px 24px;
-  margin-top: 15px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.card button:hover {
+  background: #333;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 30px auto;
+}
+
+.formulario input,
+.formulario textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.formulario button {
+  background: #0099cc;
+  color: white;
+  border: none;
+  padding: 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s ease;
 }
 
-button:hover {
-  background-color: #005FCC;
-}
-
-footer {
-  background: var(--primary);
-  color: var(--text-light);
-  text-align: center;
-  padding: 15px;
-  margin-top: 30px;
+.formulario button:hover {
+  background: #007da8;
 }
