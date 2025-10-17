@@ -2,147 +2,52 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vitrine da Gisele</title>
+  <title>Gisele Brandão — Corretora</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/png" href="images/favicon.png">
- <style>
-    :root{--accent:#43c0d9;--accent-dark:#2aa0b0;--bg:#f6f6f7;--card:#fff;--muted:#777}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#222;background:var(--bg)}
-    header{background:linear-gradient(180deg,#c84b9b 0%, #c84b9b 45%, transparent 45%);padding:24px 0}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:24px}
-
-    /* sidebar */
-    .sidebar{background:#fff;border-radius:6px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    .profile-top{background:var(--accent);color:#fff;padding:18px;text-align:center}
-    .profile-top img{width:160px;height:200px;object-fit:cover;border-radius:4px;border:6px solid rgba(255,255,255,.12)}
-    .name{margin-top:12px;font-weight:700}
-    .creci{font-size:13px;color:rgba(255,255,255,.9);margin-top:6px}
-    .contacts{padding:18px;border-top:1px solid #eee}
-    .contacts .phone{background:linear-gradient(180deg,var(--accent) 0%, var(--accent-dark)100%);color:#fff;padding:12px;border-radius:6px;text-align:center;font-weight:600}
-    .contacts p{margin:12px 0 0;color:var(--muted);font-size:14px}
-    .sidebar .actions{display:flex;flex-direction:column;padding:12px;gap:8px}
-    .btn{display:inline-flex;gap:8px;align-items:center;padding:10px;border-radius:6px;text-decoration:none;color:#fff;background:#333}
-    .btn.mail{background:#2d9cdb}
-
-    /* main */
-    main{min-height:420px}
-    .filters{background:#fff;padding:18px;border-radius:6px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .filter{flex:1;min-width:150px}
-    select,input[type=number]{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:6px}
-    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:18px}
-    .card{background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.06);display:flex;flex-direction:column}
-    .thumb{height:160px;background:linear-gradient(90deg,#b3e5fc,#c9b0ff);display:flex;align-items:end;padding:12px;color:#fff;font-weight:700;font-size:18px}
-    .card .body{padding:12px;flex:1;display:flex;flex-direction:column}
-    .card h4{margin:0 0 8px;font-size:16px}
-    .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
-    .card .foot{display:flex;justify-content:space-between;align-items:center;padding:12px;border-top:1px solid #f0f0f0}
-    .price{font-weight:800}
-
-    /* responsive */
-    @media(max-width:880px){.layout{grid-template-columns:1fr}.sidebar{order:2}.filters{flex-direction:column}}
-  </style>
 </head>
 <body>
   <header>
-    <div class="wrap layout">
-      <div class="sidebar">
-        <div class="profile-top">
-          <!-- substitua a imagem abaixo pelo seu arquivo em /images/perfil.jpg -->
-          <div class="name">GISELE BRANDAO</div>
-          <div class="creci">CRECI 283333</div>
-        </div>
-        <div class="contacts">
-          <div class="phone">(11)94360-9158</div>
-          <p>Ligações ou Whatsapp</p>
-          <div class="actions">
-            <a class="btn" href="#contato">Solicite Contato</a>
-            <a class="btn mail" href="mailto:raika.ferrari@sellerassociados.com.br">Envie um e‑mail</a>
-          </div>
-        </div>
-      </div>
-
-      <main>
-        <div class="filters">
-          <div class="filter"><label>Estado</label>
-            <select id="estado"><option value="Todos">Todos</option><option>São Paulo</option><option>Rio de Janeiro</option></select>
-          </div>
-          <div class="filter"><label>Cidade</label>
-            <select id="cidade"><option>Todos</option><option>Aclimação</option><option>Freguesia do Ó</option></select>
-          </div>
-          <div class="filter"><label>Bairro/Região</label>
-            <select id="bairro"><option>Todos</option><option>Aclimação</option><option>Freguesia do Ó</option></select>
-          </div>
-          <div class="filter"><label>Valor até (R$)</label>
-            <input id="valorMax" type="number" placeholder="Qualquer valor">
-          </div>
-          <div style="min-width:120px"><button id="filtrar" class="btn" style="width:100%;background:var(--accent)">Filtrar</button></div>
-        </div>
-
-        <div id="cards" class="cards" aria-live="polite">
-          <!-- cards gerados por JavaScript -->
-        </div>
-      </main>
-    </div>
+    <h1>Imóveis disponíveis</h1>
   </header>
 
-  <section class="wrap" style="margin-top:18px">
-    <h3>Imóveis em destaque</h3>
-    <div class="cards" id="destaques"></div>
-  </section>
-
-  <footer style="padding:40px 0;text-align:center;color:var(--muted)">Modelo estático para GitHub Pages — personalize nomes, fotos e filtros.</footer>
+  <main>
+    <div id="lista-imoveis" class="grid"></div>
+  </main>
 
   <script>
-    // dados de exemplo — substitua por seus imóveis
-    const imoveis = [
-      {id:1,titulo:'Living Wellness — Aclimação',cidade:'Aclimação',bairro:'Aclimação',preco:1200000,area:98,quartos:3,thumb:'',tipo:'Apartamento'},
-      {id:2,titulo:'High Line by Living',cidade:'Aclimação',bairro:'Aclimação',preco:950000,area:78,quartos:2,thumb:''},
-      {id:3,titulo:'Living Grand Exclusive',cidade:'Freguesia do Ó',bairro:'Freguesia do Ó',preco:1800000,area:150,quartos:4,thumb:''}
-    ];
+    async function carregarImoveis() {
+      const { data, error } = await supabase.from("imoveis").select("*");
+      if (error) {
+        console.error(error);
+        return;
+      }
 
-    function moneyBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+      const container = document.getElementById("lista-imoveis");
+      container.innerHTML = "";
 
-    function renderCards(lista,containerId){
-      const el = document.getElementById(containerId);
-      el.innerHTML = '';
-      lista.forEach(im =>{
-        const div = document.createElement('article'); div.className='card';
-        div.innerHTML = `
-          <div class="thumb">${im.titulo}</div>
-          <div class="body">
-            <h4>${im.titulo}</h4>
-            <div class="meta">${im.tipo} • ${im.quartos} dorm • ${im.area} m² • ${im.bairro} - ${im.cidade}</div>
-          </div>
-          <div class="foot">
-            <div class="price">${moneyBR(im.preco)}</div>
-            <div><a class="btn" href="https://wa.me/5511975380185?text=Olá%20gostaria%20de%20informações%20sobre%20o%20imóvel%20${encodeURIComponent(im.titulo)}" target="_blank">Contato</a></div>
+      data.forEach(imovel => {
+        container.innerHTML += `
+          <div class="card">
+            <img src="${imovel.imagem_url || 'images/default.jpg'}" alt="${imovel.titulo}">
+            <h2>${imovel.titulo}</h2>
+            <p>${imovel.tipo} • ${imovel.quartos} dorm • ${imovel.area_m2}m²</p>
+            <p>${imovel.bairro} — ${imovel.cidade}</p>
+            <strong>R$ ${Number(imovel.preco).toLocaleString('pt-BR')}</strong>
+            <button onclick="contato('${imovel.titulo}')">Contato</button>
           </div>
         `;
-        el.appendChild(div);
-      })
+      });
     }
 
-    // inicializa
-    renderCards(imoveis,'cards');
-    renderCards(imoveis.slice(0,3),'destaques');
+    function contato(titulo) {
+      const msg = encodeURIComponent(`Olá, tenho interesse no imóvel "${titulo}"!`);
+      window.open(`https://wa.me/5511943609158?text=${msg}`, "_blank");
+    }
 
-    // filtrar
-    document.getElementById('filtrar').addEventListener('click',()=>{
-      const estado = document.getElementById('estado').value;
-      const cidade = document.getElementById('cidade').value;
-      const bairro = document.getElementById('bairro').value;
-      const valorMax = Number(document.getElementById('valorMax').value)||Infinity;
-
-      const filtrados = imoveis.filter(i=>
-        (estado==='Todos'||estado===i.estado||estado==='Todos') &&
-        (cidade==='Todos'||cidade===i.cidade) &&
-        (bairro==='Todos'||bairro===i.bairro) &&
-        (i.preco<=valorMax)
-      );
-      renderCards(filtrados,'cards');
-    });
+    carregarImoveis();
   </script>
 </body>
 </html>
