@@ -1,1 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Painel da Gisele — Cadastrar Imóvel</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>Painel de Cadastro de Imóveis</h1>
+
+  <form id="formImovel" class="formulario">
+    <input type="text" id="titulo" placeholder="Título do imóvel" required />
+    <input type="text" id="tipo" placeholder="Tipo (ex: Apartamento)" required />
+    <input type="number" id="quartos" placeholder="Quartos" required />
+    <input type="number" id="area_m2" placeholder="Área (m²)" required />
+    <input type="text" id="bairro" placeholder="Bairro" required />
+    <input type="text" id="cidade" placeholder="Cidade" required />
+    <input type="text" id="estado" placeholder="Estado" required />
+    <input type="number" id="preco" placeholder="Preço (R$)" required />
+    <textarea id="descricao" placeholder="Descrição"></textarea>
+    <input type="text" id="imagem_url" placeholder="URL da imagem (opcional)" />
+    <button type="submit">Cadastrar Imóvel</button>
+  </form>
+
+  <script>
+    const form = document.getElementById("formImovel");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const { error } = await supabase.from("imoveis").insert([
+        {
+          titulo: form.titulo.value,
+          tipo: form.tipo.value,
+          quartos: form.quartos.value,
+          area_m2: form.area_m2.value,
+          bairro: form.bairro.value,
+          cidade: form.cidade.value,
+          estado: form.estado.value,
+          preco: form.preco.value,
+          descricao: form.descricao.value,
+          imagem_url: form.imagem_url.value
+        },
+      ]);
+
+      if (error) {
+        alert("❌ Erro ao cadastrar: " + error.message);
+      } else {
+        alert("✅ Imóvel cadastrado com sucesso!");
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
 
