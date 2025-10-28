@@ -29,10 +29,10 @@
       container.innerHTML = "";
 
 data.forEach(imovel => {
- lista.innerHTML += `
+ conteiner.innerHTML += `
     <div class="card">
       <img src="${imovel.imagem_url}" alt="${imovel.titulo}" style="width:100%; border-radius:12px;" />
-      <h3>${imovel.titulo}</h3>
+      <h2>${imovel.titulo}</h2>
       <p>${imovel.descricao}</p>
       <p><strong>Preço:</strong> R$ ${imovel.preco}</p>
       <a href="detalhes.html?id=${imovel.id}" class="botao">Ver mais detalhes</a>
