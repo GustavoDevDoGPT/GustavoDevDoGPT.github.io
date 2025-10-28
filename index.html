@@ -29,12 +29,14 @@
       container.innerHTML = "";
 
 data.forEach(imovel => {
- conteiner.innerHTML += `
+ container.innerHTML += `
     <div class="card">
-      <img src="${imovel.imagem_url}" alt="${imovel.titulo}" style="width:100%; border-radius:12px;" />
+      <img src="${imovel.imagem_url || 'images/default.jpg'}" alt="${imovel.titulo}" style="width:100%; border-radius:12px;" />
       <h2>${imovel.titulo}</h2>
-      <p>${imovel.descricao}</p>
-      <p><strong>Preço:</strong> R$ ${imovel.preco}</p>
+      <p>${imovel.tipo} • ${imovel.quartos} quartos • ${imovel.area_m2}m²</p>
+      <p>${imovel.bairro} - ${imovel.cidade}</p>
+      <strong>R$ ${Number(imovel.preco).toLocaleString('pt-BR')}</strong>
+      <br>
       <a href="detalhes.html?id=${imovel.id}" class="botao">Ver mais detalhes</a>
     </div>
         `;
