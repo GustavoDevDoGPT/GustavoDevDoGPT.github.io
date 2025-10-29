@@ -1,36 +1,41 @@
+/* Estilo geral */
 body {
-  font-family: Arial, sans-serif;
-  background: #fffafa;
+  font-family: "Poppins", sans-serif;
+  background-color: #0b0e18;
+  color: #fff;
   margin: 0;
   padding: 0;
-  color: #333;
 }
 
 header {
-  background: #daa520;
-  color: white;
   text-align: center;
-  padding: 20px 0;
+  padding: 30px 10px;
+  background-color: #141829;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
 }
 
-h1 {
-  margin: 0;
-}
-
+/* Lista de imóveis */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  padding: 40px;
 }
 
+/* Card */
 .card {
-  background: white;
+  background: #1a1f35;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   overflow: hidden;
-  padding-bottom: 10px;
-  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
 .card img {
@@ -39,44 +44,71 @@ h1 {
   object-fit: cover;
 }
 
-.card button {
-  background: #000;
+.info {
+  padding: 15px;
+}
+
+.info h2 {
+  font-size: 1.3rem;
+  margin: 0 0 10px;
+}
+
+.info p {
+  margin: 6px 0;
+  color: #ccc;
+}
+
+/* Botão */
+.botao {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #00bcd4;
   color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 5px;
-}
-
-.card button:hover {
-  background: #333;
-}
-
-.formulario {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-  margin: 30px auto;
-}
-
-.formulario input,
-.formulario textarea {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.formulario button {
-  background: #0099cc;
-  color: white;
-  border: none;
-  padding: 10px;
   border-radius: 8px;
-  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s;
 }
 
-.formulario button:hover {
-  background: #007da8;
+.botao:hover {
+  background-color: #008c9e;
+}
+
+/* Página de detalhes */
+.detalhes-card {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 25px;
+  background: #1a1f35;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+}
+
+.detalhes-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.detalhes-card h1 {
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.detalhes-card p {
+  color: #ccc;
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+.voltar {
+  display: inline-block;
+  margin-top: 20px;
+  color: #00bcd4;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.voltar:hover {
+  text-decoration: underline;
 }
