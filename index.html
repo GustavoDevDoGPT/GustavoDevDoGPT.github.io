@@ -14,6 +14,41 @@
   </header>
 
   <main>
+    <section id="filtros">
+  <input type="text" id="busca" placeholder="Buscar por nome..." />
+
+  <select id="localizacao">
+    <option value="">Localização</option>
+    <option value="São Paulo">São Paulo</option>
+    <option value="Rio de Janeiro">Rio de Janeiro</option>
+  </select>
+
+  <select id="preco">
+    <option value="">Faixa de preço</option>
+    <option value="0-200000">Até R$ 200 mil</option>
+    <option value="200000-500000">R$ 200 mil a R$ 500 mil</option>
+    <option value="500000-1000000">R$ 500 mil a R$ 1 milhão</option>
+    <option value="1000000-999999999">Acima de R$ 1 milhão</option>
+  </select>
+
+  <select id="quartos">
+    <option value="">Quartos</option>
+    <option value="1">1+</option>
+    <option value="2">2+</option>
+    <option value="3">3+</option>
+    <option value="4">4+</option>
+  </select>
+
+  <select id="banheiros">
+    <option value="">Banheiros</option>
+    <option value="1">1+</option>
+    <option value="2">2+</option>
+    <option value="3">3+</option>
+  </select>
+
+  <button id="filtrar">Filtrar</button>
+</section>
+    
     <div id="lista-imoveis" class="grid"></div>
   </main>
 
