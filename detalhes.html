@@ -39,6 +39,23 @@
         conteudo.innerHTML = `<p class="text-center text-red-500 text-lg">Erro ao carregar o imóvel.</p>`
         return
       }
+// Ativa a navegação entre imagens
+if (imovel.imagens && imovel.imagens.length > 1) {
+  let indice = 0;
+  const img = document.getElementById("foto-imovel");
+  const prev = document.querySelector(".prev");
+  const next = document.querySelector(".next");
+
+  prev.addEventListener("click", () => {
+    indice = (indice - 1 + imovel.imagens.length) % imovel.imagens.length;
+    img.src = imovel.imagens[indice];
+  });
+
+  next.addEventListener("click", () => {
+    indice = (indice + 1) % imovel.imagens.length;
+    img.src = imovel.imagens[indice];
+  });
+}
 
       // formata preço
       const precoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(imovel.preco)
@@ -47,9 +64,11 @@
       conteudo.innerHTML = `
       <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden mt-10">
     
-    <div class="galeria">
-      <button class="prev">❮</button>
-      <img id="foto-imovel" src="${imovel.imagem_url}" alt="${imovel.titulo}" class="w-full h-80 object-cover" />
+   <div class="galeria">
+  <button class="prev">❮</button>
+  <img id="foto-imovel" src="${imovel.imagens?.[0] || imovel.imagem_url}" alt="${imovel.titulo}" class="w-full h-80 object-cover" />
+  <button class="next">❯</button>
+</div>
           <div class="p-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-3">${imovel.titulo}</h1>
             <p class="text-gray-600 mb-4">${imovel.descricao || "Sem descrição disponível."}</p>
