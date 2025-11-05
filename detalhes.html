@@ -45,8 +45,11 @@
 
       // monta o HTML
       conteudo.innerHTML = `
-        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden mt-10">
-          <img src="${imovel.imagem_url}" alt="${imovel.titulo}" class="w-full h-80 object-cover" />
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden mt-10">
+    
+    <div class="galeria">
+      <button class="prev">❮</button>
+      <img id="foto-imovel" src="${imovel.imagem_url}" alt="${imovel.titulo}" class="w-full h-80 object-cover" />
           <div class="p-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-3">${imovel.titulo}</h1>
             <p class="text-gray-600 mb-4">${imovel.descricao || "Sem descrição disponível."}</p>
