@@ -17,86 +17,117 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhna254Z2l4ZW9wdHJnbmlpd2lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzIwOTksImV4cCI6MjA3NjMwODA5OX0.NeJ8_ezbWEpqJzYxxZ6fZtOWrOt0rbmooWosCvxmoeI"                      // 🔹 troque pela sua anon key
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    async function carregarDetalhes() {
-      const params = new URLSearchParams(window.location.search)
-      const id = params.get("id")
+  async function carregarDetalhes() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const conteudo = document.getElementById("conteudo");
 
-      const conteudo = document.getElementById("conteudo")
+  if (!id) {
+    conteudo.innerHTML = "<p>Imóvel não encontrado.</p>";
+    return;
+  }
 
-      if (!id) {
-        conteudo.innerHTML = `<p class="text-center text-red-500 text-lg">Imóvel não encontrado.</p>`
-        return
-      }
+  const { data: imovel, error } = await supabase
+    .from("imoveis")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-      const { data: imovel, error } = await supabase
-        .from("imoveis")
-        .select("*")
-        .eq("id", id)
-        .single()
+  if (error || !imovel) {
+    console.error("Erro ao carregar imóvel:", error);
+    conteudo.innerHTML = "<p>Erro ao carregar imóvel. Veja console.</p>";
+    return;
+  }
 
-      if (error || !imovel) {
-        console.error(error)
-        conteudo.innerHTML = `<p class="text-center text-red-500 text-lg">Erro ao carregar o imóvel.</p>`
-        return
-      }
-// Ativa a navegação entre imagens
-if (imovel.imagens && imovel.imagens.length > 1) {
-  let indice = 0;
-  const img = document.getElementById("foto-imovel");
-  const prev = document.querySelector(".prev");
-  const next = document.querySelector(".next");
-
-  prev.addEventListener("click", () => {
-    indice = (indice - 1 + imovel.imagens.length) % imovel.imagens.length;
-    img.src = imovel.imagens[indice];
-  });
-
-  next.addEventListener("click", () => {
-    indice = (indice + 1) % imovel.imagens.length;
-    img.src = imovel.imagens[indice];
-  });
-}
-
-      // formata preço
-      const precoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(imovel.preco)
-
-      // monta o HTML
-      conteudo.innerHTML = `
-      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden mt-10">
-    
-   <div class="galeria">
-  <button class="prev">❮</button>
-  <img id="foto-imovel" src="${imovel.imagens?.[0] || imovel.imagem_url}" alt="${imovel.titulo}" class="w-full h-80 object-cover" />
-  <button class="next">❯</button>
-</div>
-          <div class="p-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-3">${imovel.titulo}</h1>
-            <p class="text-gray-600 mb-4">${imovel.descricao || "Sem descrição disponível."}</p>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-700 mb-6">
-              <p><strong>Preço:</strong><br>${precoFormatado}</p>
-              <p><strong>Localização:</strong><br>${imovel.localizacao || "Não informada"}</p>
-              <p><strong>Metragem:</strong><br>${imovel.metragem || "—"} m²</p>
-              <p><strong>Dormitórios:</strong><br>${imovel.quartos || "—"}</p>
-              <p><strong>Banheiros:</strong><br>${imovel.banheiros || "—"}</p>
-              <p><strong>Condomínio:</strong><br>${imovel.condominio || "—"}</p>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-3">
-              <a href="index.html" class="px-5 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-center">← Voltar</a>
-              <a href="https://wa.me/5511943609158?text=Olá! Tenho interesse no imóvel '${encodeURIComponent(imovel.titulo)}'." target="_blank" class="px-5 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-center flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 13.75a8.25 8.25 0 01-8.25 8.25 8.212 8.212 0 01-4.03-1.07L3.75 21.75l.82-3.29A8.25 8.25 0 1115 3.75a8.25 8.25 0 015.25 10z" />
-                </svg>
-                Falar no WhatsApp
-              </a>
-            </div>
-          </div>
-        </div>
-      `
+  // normaliza campo imagens (pode ser text[] ou JSON string)
+  let imagens = [];
+  if (Array.isArray(imovel.imagens) && imovel.imagens.length) {
+    imagens = imovel.imagens;
+  } else if (typeof imovel.imagens === "string" && imovel.imagens.trim()) {
+    // tenta parsear caso seja string JSON
+    try {
+      const parsed = JSON.parse(imovel.imagens);
+      if (Array.isArray(parsed)) imagens = parsed;
+    } catch (e) {
+      // se não for JSON, não faz nada
     }
+  }
+  // fallback para imagem única
+  if (imagens.length === 0 && imovel.imagem_url) {
+    imagens = [imovel.imagem_url];
+  }
 
-    carregarDetalhes()
+  const precoFormatado = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(Number(imovel.preco || 0));
+
+  // monta o HTML (template literal limpo)
+  conteudo.innerHTML = `
+    <div class="container">
+      <div class="galeria">
+        <button class="prev" type="button">❮</button>
+        <img id="foto-imovel" src="${imagens[0] || 'images/default.jpg'}" alt="${(imovel.titulo||'Imóvel').replace(/"/g, '&quot;')}" />
+        <button class="next" type="button">❯</button>
+      </div>
+
+      <div class="content">
+        <h1 id="titulo">${imovel.titulo || ""}</h1>
+        <p class="subtitulo">${imovel.descricao || ""}</p>
+
+        <div class="info-grid">
+          <div><strong>Preço:</strong><span id="preco">${precoFormatado}</span></div>
+          <div><strong>Localização:</strong><span id="localizacao">${imovel.localizacao || "Não informada"}</span></div>
+          <div><strong>Metragem:</strong><span id="metragem">${imovel.metragem || "—"}</span></div>
+          <div><strong>Dormitórios:</strong><span id="dormitorios">${imovel.quartos || "—"}</span></div>
+          <div><strong>Banheiros:</strong><span id="banheiros">${imovel.banheiros || "—"}</span></div>
+          <div><strong>Condomínio:</strong><span id="condominio">${imovel.condominio || "—"}</span></div>
+        </div>
+
+        <div class="btns">
+          <button onclick="window.history.back()">← Voltar</button>
+          <a id="whatsapp-link" target="_blank">💬 Falar no WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ajusta link do WhatsApp (agora que template já está no DOM)
+  const wa = document.getElementById("whatsapp-link");
+  const mensagem = encodeURIComponent(`Olá! Tenho interesse no imóvel '${imovel.titulo || ""}'.`);
+  wa.href = `https://wa.me/5511943609158?text=${mensagem}`;
+  wa.classList.add("whatsapp-btn"); // opcional: para estilo
+
+  // === GALERIA: adiciona navegação segura ===
+  const imgEl = document.getElementById("foto-imovel");
+  const prev = document.querySelector(".galeria .prev");
+  const next = document.querySelector(".galeria .next");
+
+  // se não houver imagens, esconde os botões
+  if (!imagens || imagens.length === 0) {
+    if (prev) prev.style.display = "none";
+    if (next) next.style.display = "none";
+    return;
+  }
+
+  let indice = 0;
+  function mostrarIndice(i) {
+    indice = ((i % imagens.length) + imagens.length) % imagens.length;
+    // troca src com fallback
+    imgEl.src = imagens[indice] || "images/default.jpg";
+  }
+
+  if (prev) {
+    prev.addEventListener("click", () => mostrarIndice(indice - 1));
+  }
+  if (next) {
+    next.addEventListener("click", () => mostrarIndice(indice + 1));
+  }
+
+  // permite trocar pela miniatura (se quiser implementar miniaturas)
+  // mostrarIndice(0) já setou a primeira imagem
+  mostrarIndice(0);
+}
   </script>
 </head>
 <body class="bg-gray-100 font-sans">
