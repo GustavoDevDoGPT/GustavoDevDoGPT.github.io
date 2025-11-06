@@ -30,58 +30,58 @@
   <script>
     const form = document.getElementById("formImovel");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+ form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      // --- [PASSO 2] Converter endereço em latitude e longitude ---
-      const enderecoCompleto = `${form.localizacao.value}, ${form.bairro.value}, ${form.cidade.value}, ${form.estado.value}`;
-      let latitude = null;
-      let longitude = null;
+  const enderecoCompleto = `${form.localizacao.value}, ${form.bairro.value}, ${form.cidade.value}, ${form.estado.value}`;
 
-      try {
-        const resposta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`);
-        const dados = await resposta.json();
+  // 1️⃣ Converte endereço em coordenadas usando Nominatim (OpenStreetMap)
+  let latitude = null;
+  let longitude = null;
 
-        if (dados.length > 0) {
-          latitude = parseFloat(dados[0].lat);
-          longitude = parseFloat(dados[0].lon);
-          console.log("Coordenadas encontradas:", latitude, longitude);
-        } else {
-          alert("⚠️ Endereço não encontrado no mapa. As coordenadas não foram salvas.");
-        }
-      } catch (erro) {
-        console.error("Erro ao buscar coordenadas:", erro);
-      }
+  try {
+    const resp = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`
+    );
+    const data = await resp.json();
+    if (data && data.length > 0) {
+      latitude = parseFloat(data[0].lat);
+      longitude = parseFloat(data[0].lon);
+    }
+  } catch (e) {
+    console.warn("Erro ao geocodificar:", e);
+  }
 
-      // --- Inserir no Supabase ---
-      const { error } = await supabase.from("imoveis").insert([
-        {
-          titulo: form.titulo.value,
-          tipo: form.tipo.value,
-          quartos: form.quartos.value,
-          area_m2: form.area_m2.value,
-          bairro: form.bairro.value,
-          localizacao: form.localizacao.value,
-          metragem: form.metragem.value,
-          banheiros: form.banheiros.value,
-          condominio: form.condominio.value,
-          cidade: form.cidade.value,
-          estado: form.estado.value,
-          preco: form.preco.value,
-          descricao: form.descricao.value,
-          imagem_url: form.imagem_url.value,
-          latitude: latitude,
-          longitude: longitude
-        },
-      ]);
+  // 2️⃣ Agora envia tudo ao Supabase
+  const { error } = await supabase.from("imoveis").insert([
+    {
+      titulo: form.titulo.value,
+      tipo: form.tipo.value,
+      quartos: form.quartos.value,
+      area_m2: form.area_m2.value,
+      bairro: form.bairro.value,
+      localizacao: form.localizacao.value,
+      metragem: form.metragem.value,
+      banheiros: form.banheiros.value,
+      condominio: form.condominio.value,
+      cidade: form.cidade.value,
+      estado: form.estado.value,
+      preco: form.preco.value,
+      descricao: form.descricao.value,
+      imagem_url: form.imagem_url.value,
+      latitude,
+      longitude,
+    },
+  ]);
 
-      if (error) {
-        alert("❌ Erro ao cadastrar: " + error.message);
-      } else {
-        alert("✅ Imóvel cadastrado com sucesso!");
-        form.reset();
-      }
-    });
+  if (error) {
+    alert("❌ Erro ao cadastrar: " + error.message);
+  } else {
+    alert("✅ Imóvel cadastrado com sucesso!");
+    form.reset();
+  }
+});
+    
   </script>
 </body>
 </html>
