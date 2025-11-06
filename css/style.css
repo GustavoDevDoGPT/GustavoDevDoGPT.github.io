@@ -68,51 +68,24 @@ main {
   height: 200px;
   object-fit:
   
-/* ======= FILTROS ======= */
+/* DEBUG FORÇA (remova depois) */
 #filtros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 40px;
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 14px;
-  border: 1px solid #eee0b1;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  background: #fff !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
 }
-
-#filtros input,
-#filtros select {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #d4af37;
-  background-color: #fff;
-  color: #333;
-  font-size: 0.95rem;
-  min-width: 150px;
-  transition: all 0.2s ease;
+#filtros input, #filtros select {
+  border: 2px solid #d4af37 !important;
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
 }
-
-#filtros input:focus,
-#filtros select:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+#filtros button#filtrar {
+  background: linear-gradient(135deg,#d4af37,#caa945) !important;
+  color: #fff !important;
 }
-
-#filtros button {
-  background: linear-gradient(135deg, #d4af37, #caa945);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-
-#filtros button:hover {
-  background: linear-gradient(135deg, #b89228, #d4af37);
-  transform: scale(1.05);
+#filtros button#limpar {
+  background: #fff !important;
+  color: #b89228 !important;
+  border: 1px solid #d4af37 !important;
 }
