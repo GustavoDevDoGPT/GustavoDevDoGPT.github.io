@@ -34,6 +34,27 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      // --- [PASSO 2] Converter endereço em latitude e longitude ---
+      const enderecoCompleto = `${form.localizacao.value}, ${form.bairro.value}, ${form.cidade.value}, ${form.estado.value}`;
+      let latitude = null;
+      let longitude = null;
+
+      try {
+        const resposta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`);
+        const dados = await resposta.json();
+
+        if (dados.length > 0) {
+          latitude = parseFloat(dados[0].lat);
+          longitude = parseFloat(dados[0].lon);
+          console.log("Coordenadas encontradas:", latitude, longitude);
+        } else {
+          alert("⚠️ Endereço não encontrado no mapa. As coordenadas não foram salvas.");
+        }
+      } catch (erro) {
+        console.error("Erro ao buscar coordenadas:", erro);
+      }
+
+      // --- Inserir no Supabase ---
       const { error } = await supabase.from("imoveis").insert([
         {
           titulo: form.titulo.value,
@@ -49,7 +70,9 @@
           estado: form.estado.value,
           preco: form.preco.value,
           descricao: form.descricao.value,
-          imagem_url: form.imagem_url.value
+          imagem_url: form.imagem_url.value,
+          latitude: latitude,
+          longitude: longitude
         },
       ]);
 
@@ -63,4 +86,3 @@
   </script>
 </body>
 </html>
-
