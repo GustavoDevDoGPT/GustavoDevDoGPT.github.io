@@ -72,9 +72,15 @@ main {
 #filtros {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
-  margin-bottom: 30px;
+  align-items: center;
+  margin-bottom: 40px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #eee0b1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 #filtros input,
