@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <script>
+    // 🔐 Bloqueia acesso sem login
     if (localStorage.getItem("admin-logado") !== "true") {
       alert("Faça login primeiro!");
       window.location.href = "login.html";
@@ -20,7 +21,6 @@
     <input type="text" id="titulo" placeholder="Título do imóvel" required />
     <input type="text" id="tipo" placeholder="Tipo (ex: Apartamento)" required />
 
-    <!-- ✅ Novo campo de disponibilidade -->
     <select id="disponibilidade" required>
       <option value="">Selecione a disponibilidade</option>
       <option value="Alugar">Alugar</option>
@@ -38,6 +38,11 @@
     <input type="text" id="estado" placeholder="Estado" required />
     <input type="number" id="preco" placeholder="Preço (R$)" required />
     <textarea id="descricao" placeholder="Descrição"></textarea>
+
+    <!-- ✅ NOVO: Upload múltiplo -->
+    <label>Imagens do imóvel (pode selecionar várias):</label>
+    <input type="file" id="imagens" accept="image/*" multiple required />
+
     <button type="submit">Cadastrar Imóvel</button>
   </form>
 
@@ -47,16 +52,20 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const files = document.getElementById("imagens").files;
+      if (files.length === 0) {
+        alert("Selecione ao menos uma imagem!");
+        return;
+      }
+
+      // 🗺️ Gera endereço completo
       const enderecoCompleto = `${form.localizacao.value}, ${form.bairro.value}, ${form.cidade.value}, ${form.estado.value}`;
 
-      // 1️⃣ Converte endereço em coordenadas usando Nominatim (OpenStreetMap)
+      // 1️⃣ Converte endereço em coordenadas
       let latitude = null;
       let longitude = null;
-
       try {
-        const resp = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`
-        );
+        const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`);
         const data = await resp.json();
         if (data && data.length > 0) {
           latitude = parseFloat(data[0].lat);
@@ -66,12 +75,37 @@
         console.warn("Erro ao geocodificar:", e);
       }
 
-      // 2️⃣ Envia tudo ao Supabase
+      // 2️⃣ Faz upload de todas as imagens
+      const urlsImagens = [];
+      for (const file of files) {
+        const nomeArquivo = `${Date.now()}-${file.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("imagens-imoveis") // 🔁 nome do bucket
+          .upload(nomeArquivo, file);
+
+        if (uploadError) {
+          console.error("Erro ao enviar imagem:", uploadError.message);
+          alert("❌ Erro ao enviar uma imagem: " + uploadError.message);
+          return;
+        }
+
+        // Pega a URL pública
+        const { data: publicUrlData } = supabase.storage
+          .from("imagens-imoveis")
+          .getPublicUrl(nomeArquivo);
+
+        urlsImagens.push(publicUrlData.publicUrl);
+      }
+
+      // 3️⃣ Define imagem principal (primeira)
+      const imagemPrincipal = urlsImagens[0] || null;
+
+      // 4️⃣ Envia os dados ao Supabase
       const { error } = await supabase.from("imoveis").insert([
         {
           titulo: form.titulo.value,
           tipo: form.tipo.value,
-          disponibilidade: form.disponibilidade.value, // ✅ novo campo
+          disponibilidade: form.disponibilidade.value,
           quartos: form.quartos.value,
           area_m2: form.area_m2.value,
           bairro: form.bairro.value,
@@ -83,6 +117,8 @@
           estado: form.estado.value,
           preco: form.preco.value,
           descricao: form.descricao.value,
+          imagem_url: imagemPrincipal,
+          imagens: urlsImagens, // ✅ salva todas as imagens no JSON
           latitude,
           longitude,
         },
