@@ -15,9 +15,8 @@
 
   <main>
     <section id="filtros">
-      <input type="text" id="busca" placeholder="Buscar por nome..." />
 
-      <!-- 🔹 Filtro por ESTADO -->
+      <!-- Estado -->
       <select id="estado">
         <option value="">Estado</option>
         <option value="São Paulo">São Paulo</option>
@@ -25,9 +24,26 @@
         <option value="Minas Gerais">Minas Gerais</option>
       </select>
 
-      <!-- 🔹 Filtro por CIDADE -->
-      <input type="text" id="cidade" placeholder="Cidade" />
+      <!-- Cidade (dinâmico) -->
+      <select id="cidade" disabled>
+        <option value="">Selecione o estado primeiro</option>
+      </select>
 
+      <!-- Tipo -->
+      <select id="tipo">
+        <option value="">Tipo</option>
+        <option value="Casa">Casa</option>
+        <option value="Apartamento">Apartamento</option>
+      </select>
+
+      <!-- Disponibilidade -->
+      <select id="disponibilidade">
+        <option value="">Disponibilidade</option>
+        <option value="Alugar">Alugar</option>
+        <option value="Comprar">Comprar</option>
+      </select>
+
+      <!-- Faixa de preço -->
       <select id="preco">
         <option value="">Faixa de preço</option>
         <option value="0-200000">Até R$ 200 mil</option>
@@ -36,6 +52,7 @@
         <option value="1000000-999999999">Acima de R$ 1 milhão</option>
       </select>
 
+      <!-- Quartos -->
       <select id="quartos">
         <option value="">Quartos</option>
         <option value="1">1+</option>
@@ -44,6 +61,7 @@
         <option value="4">4+</option>
       </select>
 
+      <!-- Banheiros -->
       <select id="banheiros">
         <option value="">Banheiros</option>
         <option value="1">1+</option>
@@ -58,83 +76,98 @@
   </main>
 
   <script>
-async function carregarImoveis(filtros = {}) {
-  let query = supabase.from("imoveis").select("*");
-
-  // 🔍 Filtro por texto (nome)
-  if (filtros.busca) {
-    query = query.ilike("titulo", `%${filtros.busca}%`);
-  }
-
-  // 📍 Filtro por estado
-  if (filtros.estado) {
-    query = query.ilike("estado", `%${filtros.estado}%`);
-  }
-
-  // 🏙️ Filtro por cidade
-  if (filtros.cidade) {
-    query = query.ilike("cidade", `%${filtros.cidade}%`);
-  }
-
-  // 💰 Faixa de preço
-  if (filtros.preco) {
-    const [min, max] = filtros.preco.split("-").map(Number);
-    query = query.gte("preco", min).lte("preco", max);
-  }
-
-  // 🛏️ Quartos
-  if (filtros.quartos) {
-    query = query.gte("quartos", filtros.quartos);
-  }
-
-  // 🚿 Banheiros
-  if (filtros.banheiros) {
-    query = query.gte("banheiros", filtros.banheiros);
-  }
-
-  const { data, error } = await query;
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  const container = document.getElementById("lista-imoveis");
-  container.innerHTML = "";
-
-  if (data.length === 0) {
-    container.innerHTML = `<p style="text-align:center;">Nenhum imóvel encontrado 😕</p>`;
-    return;
-  }
-
-  data.forEach(imovel => {
-    container.innerHTML += `
-      <div class="card">
-        <img src="${imovel.imagem_url || 'images/default.jpg'}" alt="${imovel.titulo}" />
-        <h2>${imovel.titulo}</h2>
-        <p>${imovel.tipo} • ${imovel.quartos} quartos • ${imovel.area_m2}m²</p>
-        <p>${imovel.bairro} - ${imovel.cidade}</p>
-        <strong>R$ ${Number(imovel.preco).toLocaleString('pt-BR')}</strong>
-        <a href="detalhes.html?id=${imovel.id}" class="botao">Ver mais detalhes</a>
-      </div>
-    `;
-  });
-}
-
-// 🔘 Evento do botão
-document.getElementById("filtrar").addEventListener("click", () => {
-  const filtros = {
-    busca: document.getElementById("busca").value.trim(),
-    estado: document.getElementById("estado").value,
-    cidade: document.getElementById("cidade").value.trim(),
-    preco: document.getElementById("preco").value,
-    quartos: document.getElementById("quartos").value,
-    banheiros: document.getElementById("banheiros").value,
+  // 🗺️ Lista de cidades por estado
+  const cidadesPorEstado = {
+    "São Paulo": ["São Paulo", "Campinas", "Santos", "Sorocaba"],
+    "Rio de Janeiro": ["Rio de Janeiro", "Niterói", "Petrópolis"],
+    "Minas Gerais": ["Belo Horizonte", "Uberlândia", "Juiz de Fora"]
   };
-  carregarImoveis(filtros);
-});
 
-// 🔄 Carregar tudo no início
-carregarImoveis();
+  const estadoSelect = document.getElementById("estado");
+  const cidadeSelect = document.getElementById("cidade");
+
+  // Quando muda o estado ➜ atualiza as cidades
+  estadoSelect.addEventListener("change", () => {
+    const estado = estadoSelect.value;
+    cidadeSelect.innerHTML = "";
+    
+    if (!estado) {
+      cidadeSelect.disabled = true;
+      cidadeSelect.innerHTML = `<option value="">Selecione o estado primeiro</option>`;
+      return;
+    }
+
+    // Popula as cidades do estado escolhido
+    const cidades = cidadesPorEstado[estado] || [];
+    cidadeSelect.disabled = false;
+    cidadeSelect.innerHTML = `<option value="">Cidade</option>`;
+    cidades.forEach(cidade => {
+      const option = document.createElement("option");
+      option.value = cidade;
+      option.textContent = cidade;
+      cidadeSelect.appendChild(option);
+    });
+  });
+
+  // 🔍 Função para carregar imóveis do Supabase
+  async function carregarImoveis(filtros = {}) {
+    let query = supabase.from("imoveis").select("*");
+
+    if (filtros.estado) query = query.eq("estado", filtros.estado);
+    if (filtros.cidade) query = query.eq("cidade", filtros.cidade);
+    if (filtros.tipo) query = query.eq("tipo", filtros.tipo);
+    if (filtros.disponibilidade) query = query.eq("disponibilidade", filtros.disponibilidade);
+    if (filtros.preco) {
+      const [min, max] = filtros.preco.split("-").map(Number);
+      query = query.gte("preco", min).lte("preco", max);
+    }
+    if (filtros.quartos) query = query.gte("quartos", filtros.quartos);
+    if (filtros.banheiros) query = query.gte("banheiros", filtros.banheiros);
+
+    const { data, error } = await query;
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const container = document.getElementById("lista-imoveis");
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+      container.innerHTML = `<p style="text-align:center;">Nenhum imóvel encontrado 😕</p>`;
+      return;
+    }
+
+    data.forEach(imovel => {
+      container.innerHTML += `
+        <div class="card">
+          <img src="${imovel.imagem_url || 'images/default.jpg'}" alt="${imovel.titulo}" />
+          <h2>${imovel.titulo}</h2>
+          <p>${imovel.tipo} • ${imovel.quartos} quartos • ${imovel.area_m2}m²</p>
+          <p>${imovel.bairro} - ${imovel.cidade}</p>
+          <strong>R$ ${Number(imovel.preco).toLocaleString('pt-BR')}</strong>
+          <a href="detalhes.html?id=${imovel.id}" class="botao">Ver mais detalhes</a>
+        </div>
+      `;
+    });
+  }
+
+  // 🔘 Evento do botão de filtro
+  document.getElementById("filtrar").addEventListener("click", () => {
+    const filtros = {
+      estado: document.getElementById("estado").value,
+      cidade: document.getElementById("cidade").value,
+      tipo: document.getElementById("tipo").value,
+      disponibilidade: document.getElementById("disponibilidade").value,
+      preco: document.getElementById("preco").value,
+      quartos: document.getElementById("quartos").value,
+      banheiros: document.getElementById("banheiros").value,
+    };
+    carregarImoveis(filtros);
+  });
+
+  // 🔄 Carregar todos os imóveis no início
+  carregarImoveis();
   </script>
 </body>
 </html>
