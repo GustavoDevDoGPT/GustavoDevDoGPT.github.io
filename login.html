@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Admin</title>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+
+    const supabase = createClient(
+      "https://xgknxgixeoptrgniiwiq.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhna254Z2l4ZW9wdHJnbmlpd2lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzIwOTksImV4cCI6MjA3NjMwODA5OX0.NeJ8_ezbWEpqJzYxxZ6fZtOWrOt0rbmooWosCvxmoeI"
+    );
+
+    document.querySelector("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const senha = e.target.senha.value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      });
+
+      if (error) {
+        alert("❌ Login inválido!");
+      } else {
+        localStorage.setItem("admin-logado", "true");
+        window.location.href = "admin.html";
+      }
+    });
+  </script>
+</head>
+<body>
+  <form>
+    <h2>Login de Administrador</h2>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="senha" placeholder="Senha" required><br>
+    <button type="submit">Entrar</button>
+  </form>
+</body>
+</html>
