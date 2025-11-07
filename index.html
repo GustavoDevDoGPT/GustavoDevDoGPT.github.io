@@ -10,50 +10,54 @@
 </head>
 <body>
   <header>
-    <h1>Brandão Imovéis</h1>
+    <h1>Brandão Imóveis</h1>
   </header>
 
   <main>
     <section id="filtros">
-  <input type="text" id="busca" placeholder="Buscar por nome..." />
+      <input type="text" id="busca" placeholder="Buscar por nome..." />
 
-  <select id="localizacao">
-    <option value="">Estado</option>
-    <option value="São Paulo">São Paulo</option>
-    <option value="Rio de Janeiro">Rio de Janeiro</option>
-  </select>
+      <!-- 🔹 Filtro por ESTADO -->
+      <select id="estado">
+        <option value="">Estado</option>
+        <option value="São Paulo">São Paulo</option>
+        <option value="Rio de Janeiro">Rio de Janeiro</option>
+        <option value="Minas Gerais">Minas Gerais</option>
+      </select>
 
-  <select id="preco">
-    <option value="">Faixa de preço</option>
-    <option value="0-200000">Até R$ 200 mil</option>
-    <option value="200000-500000">R$ 200 mil a R$ 500 mil</option>
-    <option value="500000-1000000">R$ 500 mil a R$ 1 milhão</option>
-    <option value="1000000-999999999">Acima de R$ 1 milhão</option>
-  </select>
+      <!-- 🔹 Filtro por CIDADE -->
+      <input type="text" id="cidade" placeholder="Cidade" />
 
-  <select id="quartos">
-    <option value="">Quartos</option>
-    <option value="1">1+</option>
-    <option value="2">2+</option>
-    <option value="3">3+</option>
-    <option value="4">4+</option>
-  </select>
+      <select id="preco">
+        <option value="">Faixa de preço</option>
+        <option value="0-200000">Até R$ 200 mil</option>
+        <option value="200000-500000">R$ 200 mil a R$ 500 mil</option>
+        <option value="500000-1000000">R$ 500 mil a R$ 1 milhão</option>
+        <option value="1000000-999999999">Acima de R$ 1 milhão</option>
+      </select>
 
-  <select id="banheiros">
-    <option value="">Banheiros</option>
-    <option value="1">1+</option>
-    <option value="2">2+</option>
-    <option value="3">3+</option>
-  </select>
+      <select id="quartos">
+        <option value="">Quartos</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+      </select>
 
-  <button id="filtrar">Filtrar</button>
-</section>
+      <select id="banheiros">
+        <option value="">Banheiros</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+      </select>
+
+      <button id="filtrar">Filtrar</button>
+    </section>
     
     <div id="lista-imoveis" class="grid"></div>
   </main>
 
   <script>
-    
 async function carregarImoveis(filtros = {}) {
   let query = supabase.from("imoveis").select("*");
 
@@ -62,9 +66,14 @@ async function carregarImoveis(filtros = {}) {
     query = query.ilike("titulo", `%${filtros.busca}%`);
   }
 
-  // 📍 Localização
-  if (filtros.localizacao) {
-    query = query.eq("cidade", filtros.localizacao);
+  // 📍 Filtro por estado
+  if (filtros.estado) {
+    query = query.ilike("estado", `%${filtros.estado}%`);
+  }
+
+  // 🏙️ Filtro por cidade
+  if (filtros.cidade) {
+    query = query.ilike("cidade", `%${filtros.cidade}%`);
   }
 
   // 💰 Faixa de preço
@@ -115,7 +124,8 @@ async function carregarImoveis(filtros = {}) {
 document.getElementById("filtrar").addEventListener("click", () => {
   const filtros = {
     busca: document.getElementById("busca").value.trim(),
-    localizacao: document.getElementById("localizacao").value,
+    estado: document.getElementById("estado").value,
+    cidade: document.getElementById("cidade").value.trim(),
     preco: document.getElementById("preco").value,
     quartos: document.getElementById("quartos").value,
     banheiros: document.getElementById("banheiros").value,
@@ -125,7 +135,6 @@ document.getElementById("filtrar").addEventListener("click", () => {
 
 // 🔄 Carregar tudo no início
 carregarImoveis();
-    
   </script>
 </body>
 </html>
