@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-    <script>
-  if (localStorage.getItem("admin-logado") !== "true") {
-    alert("Faça login primeiro!");
-    window.location.href = "login.html";
-  }
-</script>
+  <script>
+    if (localStorage.getItem("admin-logado") !== "true") {
+      alert("Faça login primeiro!");
+      window.location.href = "login.html";
+    }
+  </script>
   <title>Brandão Imóveis - Cadastros</title>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
@@ -19,13 +19,21 @@
   <form id="formImovel" class="formulario">
     <input type="text" id="titulo" placeholder="Título do imóvel" required />
     <input type="text" id="tipo" placeholder="Tipo (ex: Apartamento)" required />
+
+    <!-- ✅ Novo campo de disponibilidade -->
+    <select id="disponibilidade" required>
+      <option value="">Selecione a disponibilidade</option>
+      <option value="Alugar">Alugar</option>
+      <option value="Comprar">Comprar</option>
+    </select>
+
     <input type="number" id="quartos" placeholder="Quartos" required />
     <input type="number" id="area_m2" placeholder="Área (m²)" required />
     <input type="text" id="bairro" placeholder="Bairro" required />
-    <input type="text" id="localizacao" placeholder="Endereco" required />
+    <input type="text" id="localizacao" placeholder="Endereço" required />
     <input type="number" id="metragem" placeholder="Metragem" required />
     <input type="number" id="banheiros" placeholder="Banheiros" required />
-    <input type="number" id="condominio" placeholder="Condominio" required />
+    <input type="number" id="condominio" placeholder="Condomínio" required />
     <input type="text" id="cidade" placeholder="Cidade" required />
     <input type="text" id="estado" placeholder="Estado" required />
     <input type="number" id="preco" placeholder="Preço (R$)" required />
@@ -36,57 +44,57 @@
   <script>
     const form = document.getElementById("formImovel");
 
- form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  const enderecoCompleto = `${form.localizacao.value}, ${form.bairro.value}, ${form.cidade.value}, ${form.estado.value}`;
+      const enderecoCompleto = `${form.localizacao.value}, ${form.bairro.value}, ${form.cidade.value}, ${form.estado.value}`;
 
-  // 1️⃣ Converte endereço em coordenadas usando Nominatim (OpenStreetMap)
-  let latitude = null;
-  let longitude = null;
+      // 1️⃣ Converte endereço em coordenadas usando Nominatim (OpenStreetMap)
+      let latitude = null;
+      let longitude = null;
 
-  try {
-    const resp = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`
-    );
-    const data = await resp.json();
-    if (data && data.length > 0) {
-      latitude = parseFloat(data[0].lat);
-      longitude = parseFloat(data[0].lon);
-    }
-  } catch (e) {
-    console.warn("Erro ao geocodificar:", e);
-  }
+      try {
+        const resp = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`
+        );
+        const data = await resp.json();
+        if (data && data.length > 0) {
+          latitude = parseFloat(data[0].lat);
+          longitude = parseFloat(data[0].lon);
+        }
+      } catch (e) {
+        console.warn("Erro ao geocodificar:", e);
+      }
 
-  // 2️⃣ Agora envia tudo ao Supabase
-  const { error } = await supabase.from("imoveis").insert([
-    {
-      titulo: form.titulo.value,
-      tipo: form.tipo.value,
-      quartos: form.quartos.value,
-      area_m2: form.area_m2.value,
-      bairro: form.bairro.value,
-      localizacao: form.localizacao.value,
-      metragem: form.metragem.value,
-      banheiros: form.banheiros.value,
-      condominio: form.condominio.value,
-      cidade: form.cidade.value,
-      estado: form.estado.value,
-      preco: form.preco.value,
-      descricao: form.descricao.value,
-      latitude,
-      longitude,
-    },
-  ]);
+      // 2️⃣ Envia tudo ao Supabase
+      const { error } = await supabase.from("imoveis").insert([
+        {
+          titulo: form.titulo.value,
+          tipo: form.tipo.value,
+          disponibilidade: form.disponibilidade.value, // ✅ novo campo
+          quartos: form.quartos.value,
+          area_m2: form.area_m2.value,
+          bairro: form.bairro.value,
+          localizacao: form.localizacao.value,
+          metragem: form.metragem.value,
+          banheiros: form.banheiros.value,
+          condominio: form.condominio.value,
+          cidade: form.cidade.value,
+          estado: form.estado.value,
+          preco: form.preco.value,
+          descricao: form.descricao.value,
+          latitude,
+          longitude,
+        },
+      ]);
 
-  if (error) {
-    alert("❌ Erro ao cadastrar: " + error.message);
-  } else {
-    alert("✅ Imóvel cadastrado com sucesso!");
-    form.reset();
-  }
-});
-    
+      if (error) {
+        alert("❌ Erro ao cadastrar: " + error.message);
+      } else {
+        alert("✅ Imóvel cadastrado com sucesso!");
+        form.reset();
+      }
+    });
   </script>
 </body>
 </html>
