@@ -2,7 +2,13 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Painel da Gisele — Cadastrar Imóvel</title>
+    <script>
+  if (localStorage.getItem("admin-logado") !== "true") {
+    alert("Faça login primeiro!");
+    window.location.href = "login.html";
+  }
+</script>
+  <title>Painel de cadastro</title>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <link rel="stylesheet" href="css/style.css" />
