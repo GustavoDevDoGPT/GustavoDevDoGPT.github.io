@@ -15,18 +15,14 @@
 
   <main>
     <section id="filtros">
-
       <!-- Estado -->
       <select id="estado">
         <option value="">Estado</option>
-        <option value="São Paulo">São Paulo</option>
-        <option value="Rio de Janeiro">Rio de Janeiro</option>
-        <option value="Minas Gerais">Minas Gerais</option>
       </select>
 
-      <!-- Cidade (dinâmico) -->
+      <!-- Cidade -->
       <select id="cidade" disabled>
-        <option value="">Selecione o estado primeiro</option>
+        <option value="">Cidade</option>
       </select>
 
       <!-- Tipo -->
@@ -69,47 +65,71 @@
         <option value="3">3+</option>
       </select>
 
-      <button id="filtrar">Filtrar</button>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button id="filtrar">Filtrar</button>
+        <button id="limpar">Limpar filtros</button>
+      </div>
     </section>
     
     <div id="lista-imoveis" class="grid"></div>
   </main>
 
   <script>
-  // 🗺️ Lista de cidades por estado
-  const cidadesPorEstado = {
-    "São Paulo": ["São Paulo", "Campinas", "Santos", "Sorocaba"],
-    "Rio de Janeiro": ["Rio de Janeiro", "Niterói", "Petrópolis"],
-    "Minas Gerais": ["Belo Horizonte", "Uberlândia", "Juiz de Fora"]
-  };
-
   const estadoSelect = document.getElementById("estado");
   const cidadeSelect = document.getElementById("cidade");
 
-  // Quando muda o estado ➜ atualiza as cidades
-  estadoSelect.addEventListener("change", () => {
-    const estado = estadoSelect.value;
-    cidadeSelect.innerHTML = "";
-    
-    if (!estado) {
-      cidadeSelect.disabled = true;
-      cidadeSelect.innerHTML = `<option value="">Selecione o estado primeiro</option>`;
+  // ✅ 1. Carrega lista de estados diretamente do Supabase
+  async function carregarEstados() {
+    const { data, error } = await supabase.from("imoveis").select("estado");
+    if (error) {
+      console.error("Erro ao buscar estados:", error);
       return;
     }
 
-    // Popula as cidades do estado escolhido
-    const cidades = cidadesPorEstado[estado] || [];
-    cidadeSelect.disabled = false;
+    // Filtra valores únicos
+    const estados = [...new Set(data.map(item => item.estado).filter(Boolean))];
+    estados.sort();
+
+    estadoSelect.innerHTML = `<option value="">Estado</option>`;
+    estados.forEach(estado => {
+      const opt = document.createElement("option");
+      opt.value = estado;
+      opt.textContent = estado;
+      estadoSelect.appendChild(opt);
+    });
+  }
+
+  // ✅ 2. Quando o estado muda, carrega as cidades correspondentes
+  estadoSelect.addEventListener("change", async () => {
+    const estado = estadoSelect.value;
     cidadeSelect.innerHTML = `<option value="">Cidade</option>`;
+    cidadeSelect.disabled = true;
+
+    if (!estado) return;
+
+    const { data, error } = await supabase
+      .from("imoveis")
+      .select("cidade")
+      .eq("estado", estado);
+
+    if (error) {
+      console.error("Erro ao buscar cidades:", error);
+      return;
+    }
+
+    const cidades = [...new Set(data.map(item => item.cidade).filter(Boolean))];
+    cidades.sort();
+
+    cidadeSelect.disabled = false;
     cidades.forEach(cidade => {
-      const option = document.createElement("option");
-      option.value = cidade;
-      option.textContent = cidade;
-      cidadeSelect.appendChild(option);
+      const opt = document.createElement("option");
+      opt.value = cidade;
+      opt.textContent = cidade;
+      cidadeSelect.appendChild(opt);
     });
   });
 
-  // 🔍 Função para carregar imóveis do Supabase
+  // ✅ 3. Função principal para buscar imóveis com filtros
   async function carregarImoveis(filtros = {}) {
     let query = supabase.from("imoveis").select("*");
 
@@ -152,7 +172,7 @@
     });
   }
 
-  // 🔘 Evento do botão de filtro
+  // ✅ 4. Botão de filtro
   document.getElementById("filtrar").addEventListener("click", () => {
     const filtros = {
       estado: document.getElementById("estado").value,
@@ -166,7 +186,15 @@
     carregarImoveis(filtros);
   });
 
-  // 🔄 Carregar todos os imóveis no início
+  // ✅ 5. Botão de limpar filtros
+  document.getElementById("limpar").addEventListener("click", () => {
+    document.querySelectorAll("#filtros select").forEach(sel => sel.value = "");
+    cidadeSelect.disabled = true;
+    carregarImoveis(); // recarrega todos os imóveis
+  });
+
+  // ✅ 6. Inicialização automática
+  carregarEstados();
   carregarImoveis();
   </script>
 </body>
