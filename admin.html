@@ -19,8 +19,18 @@
 
   <form id="formImovel" class="formulario">
     <input type="text" id="titulo" placeholder="Título do imóvel" required />
-    <input type="text" id="tipo" placeholder="Tipo (ex: Apartamento)" required />
-
+    
+<select id="tipo" required>
+  <option value="">Selecione o tipo</option>
+  <option value="Casa">Casa</option>
+  <option value="Apartamento">Apartamento</option>
+  </select>
+    
+<select id="estado" required>
+  <option value="">Selecione o estado</option>
+    <option value="São Paulo">São Paulo</option>
+</select>
+  
     <select id="disponibilidade">
       <option value="">Alugar e comprar</option>
       <option value="Alugar">Apenas alugar</option>
@@ -35,7 +45,6 @@
     <input type="number" id="banheiros" placeholder="Banheiros" required />
     <input type="number" id="condominio" placeholder="Condomínio" required />
     <input type="text" id="cidade" placeholder="Cidade" required />
-    <input type="text" id="estado" placeholder="Estado" required />
     <input type="number" id="preco" placeholder="Preço (R$)" required />
     <textarea id="descricao" placeholder="Descrição"></textarea>
 
