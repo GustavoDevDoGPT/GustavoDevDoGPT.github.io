@@ -39,14 +39,19 @@
         <option value="Comprar">Apenas comprar</option>
       </select>
 
-      <!-- Faixa de preço -->
-      <select id="preco">
-        <option value="">Faixa de preço</option>
-        <option value="0-200000">Até R$ 200 mil</option>
-        <option value="200000-500000">R$ 200 mil a R$ 500 mil</option>
-        <option value="500000-1000000">R$ 500 mil a R$ 1 milhão</option>
-        <option value="1000000-999999999">Acima de R$ 1 milhão</option>
-      </select>
+     <label for="preco">Faixa de preço:</label>
+<select id="preco" onchange="togglePrecoCustom(this.value)">
+  <option value="">Selecione a faixa</option>
+  <option value="0-200000">Até R$ 200 mil</option>
+  <option value="200000-400000">R$ 200 mil a R$ 400 mil</option>
+  <option value="400000-600000">R$ 400 mil a R$ 600 mil</option>
+  <option value="600000-800000">R$ 600 mil a R$ 800 mil</option>
+  <option value="800000-1000000">R$ 800 mil a R$ 1 milhão</option>
+  <option value="custom">Outro valor...</option>
+</select>
+
+<input type="text" id="preco-custom" placeholder="Digite a faixa (ex: 300000-700000)" style="display:none;" />
+
 
       <!-- Quartos -->
       <select id="quartos">
@@ -63,6 +68,7 @@
         <option value="1">1+</option>
         <option value="2">2+</option>
         <option value="3">3+</option>
+        <option value="4">4+</option>
       </select>
 
       <div style="display:flex; gap:10px; margin-top:10px;">
@@ -77,6 +83,12 @@
   <script>
   const estadoSelect = document.getElementById("estado");
   const cidadeSelect = document.getElementById("cidade");
+
+      // 🔹 Função para mostrar ou esconder o campo de preço personalizado
+  function togglePrecoCustom(value) {
+    const input = document.getElementById("preco-custom");
+    input.style.display = value === "custom" ? "block" : "none";
+  }
 
   // ✅ 1. Carrega lista de estados diretamente do Supabase
   async function carregarEstados() {
